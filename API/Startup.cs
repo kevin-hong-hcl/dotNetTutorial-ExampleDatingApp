@@ -34,6 +34,7 @@ namespace API
             options.UseSqlite(this._config.GetConnectionString("DefaultConnection"));
          });
          services.AddControllers();
+         services.AddCors();
          services.AddSwaggerGen(c =>
          {
             c.SwaggerDoc("v1", new OpenApiInfo { Title = "API", Version = "v1" });
@@ -53,6 +54,9 @@ namespace API
          app.UseHttpsRedirection();
 
          app.UseRouting();
+
+         // USECORS MUST BE BETWEEN USEROUTING AND USEENDPOINTS, AND BEFORE USEAUTHORIZATION
+         app.UseCors(policy => policy.AllowAnyHeader().AllowAnyMethod().WithOrigins("https://localhost:4200"));
 
          app.UseAuthorization();
 
