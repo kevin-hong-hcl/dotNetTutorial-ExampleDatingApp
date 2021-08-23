@@ -16,7 +16,11 @@
             </li>
 
             <li class="list-inline-item">
-                <button class="btn btn-primary">
+                <button 
+                    class="btn btn-primary"
+                    [queryParams]="{tab: 3}" 
+                    routerLink="/members/{{member.username}}"
+                >
                     <i class="fa fa-envelope"></i>
                 </button>
             </li>
