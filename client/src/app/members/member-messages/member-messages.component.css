@@ -14,6 +14,11 @@
     border-bottom: 1px dotted #b3a9a9;
 }
 
+.chat::webkit-scrollbar {
+    position: relative;
+}
+
 .rounded-circle {
     max-height: 50px;
 }
+
