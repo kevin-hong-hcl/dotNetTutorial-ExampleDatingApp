@@ -1,8 +1,8 @@
 import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, UrlSegment } from '@angular/router';
 import { NgxGalleryAnimation, NgxGalleryImage, NgxGalleryOptions } from "@kolkov/ngx-gallery";
 import { TabDirective, TabsetComponent } from 'ngx-bootstrap/tabs';
-import { take } from 'rxjs/operators';
+import { take, map } from 'rxjs/operators';
 
 import { Member } from 'src/app/_models/member';
 import { Message } from 'src/app/_models/message';
@@ -25,7 +25,7 @@ export class MemberDetailComponent implements OnInit, OnDestroy {
   activeTab: TabDirective;
   messages: Message[] = [];
   user: User;
-
+  routePathBase: string;
 
   constructor(
     public presence: PresenceService,
@@ -45,6 +45,8 @@ export class MemberDetailComponent implements OnInit, OnDestroy {
     // this.loadMember();
 
     this.route.queryParams.subscribe(params => {
+      console.log("QUERY PARAMS CHANGED")
+      console.log(params)
       params.tab ? this.selectTab(params.tab) : this.selectTab(0);
     })
 
@@ -62,6 +64,10 @@ export class MemberDetailComponent implements OnInit, OnDestroy {
     }
 
     this.galleryImages = this.getImages();
+
+    this.route.url.pipe(take(1)).subscribe(urlSegments => {
+      this.routePathBase = `/${urlSegments.map(a => a.path).join("/")}`;
+    })
   }
 
 
@@ -92,10 +98,27 @@ export class MemberDetailComponent implements OnInit, OnDestroy {
   }
 
   selectTab(tabId: number) {
+    // UPDATE QUERY PARAMS
+    this.router.navigate(
+      [],
+      {
+        relativeTo: this.route,
+        queryParams: {tab: tabId}
+      }
+    );
+    
     this.memberTabs.tabs[tabId].active = true;
   }
 
-  onTabActivated(data: TabDirective) {
+  onTabActivated(data: TabDirective, tabId: number) {
+    this.router.navigate(
+      [],
+      {
+        relativeTo: this.route,
+        queryParams: {tab: tabId}
+      }
+    );
+
     this.activeTab = data;
     if (this.activeTab.heading === "Messages" && this.messages.length === 0) {
       this.messageService.createHubConnection(this.user, this.member.username);
